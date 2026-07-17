@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Cuestionario Interactivo</title>
+    <style>
+        /* ===== RESET Y BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ===== CONTENEDOR PRINCIPAL ===== */
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        /* ===== ENCABEZADO ===== */
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header .emoji-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+            display: block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #4a4a8a;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            color: #888;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* ===== LÍNEA DECORATIVA ===== */
+        .divider {
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #f093fb, #764ba2);
+            border-radius: 10px;
+            margin: 20px 0 30px 0;
+        }
+
+        /* ===== BADGES / ETIQUETAS ===== */
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .badge.green {
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
+        }
+
+        .badge.orange {
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            color: #333;
+        }
+
+        /* ===== CONTENEDOR DEL IFRAME ===== */
+        .quiz-wrapper {
+            background: #f8f9ff;
+            border-radius: 16px;
+            padding: 15px;
+            border: 3px solid #e8eaff;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #f093fb);
+        }
+
+        .quiz-frame {
+            width: 100%;
+            max-width: 500px;
+            height: 380px;
+            border: none;
+            border-radius: 10px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* ===== BOTONES ===== */
+        .btn-container {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            box-shadow: 0 5px 20px rgba(240, 147, 251, 0.4);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.6);
+        }
+
+        .btn-outline {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* ===== INSTRUCCIONES ===== */
+        .instructions {
+            background: linear-gradient(135deg, #f0f4ff, #fdf0ff);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .instructions h3 {
+            color: #4a4a8a;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions ul li {
+            color: #666;
+            font-size: 0.9rem;
+            padding: 4px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .instructions ul li::before {
+            content: '✅';
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 15px;
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== ESTRELLAS DECORATIVAS ===== */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .main-container {
+                padding: 25px 15px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .quiz-frame {
+                height: 320px;
+            }
+
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Estrellas decorativas de fondo -->
+    <div class="stars">
+        <div class="star" style="top:10%; left:15%; animation-delay:0s;"></div>
+        <div class="star" style="top:20%; left:80%; animation-delay:0.5s;"></div>
+        <div class="star" style="top:50%; left:5%; animation-delay:1s;"></div>
+        <div class="star" style="top:70%; left:90%; animation-delay:1.5s;"></div>
+        <div class="star" style="top:85%; left:30%; animation-delay:2s;"></div>
+        <div class="star" style="top:35%; left:55%; animation-delay:0.8s;"></div>
+        <div class="star" style="top:60%; left:70%; animation-delay:1.2s;"></div>
+        <div class="star" style="top:15%; left:45%; animation-delay:0.3s;"></div>
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="main-container">
+
+        <!-- Encabezado -->
+        <div class="header">
+            <span class="emoji-icon">🎯</span>
+            <h1>Mi Cuestionario Interactivo</h1>
+            <p>¡Pon a prueba tus conocimientos con este divertido cuestionario!</p>
+        </div>
+
+        <!-- Línea decorativa -->
+        <div class="divider"></div>
+
+        <!-- Etiquetas informativas -->
+        <div class="badges">
+            <span class="badge">📝 Cuestionario</span>
+            <span class="badge green">🎮 Interactivo</span>
+            <span class="badge orange">⚡ Wordwall</span>
+        </div>
+
+        <!-- Instrucciones -->
+        <div class="instructions">
+            <h3>📋 ¿Cómo jugar?</h3>
+            <ul>
+                <li>Lee cada pregunta cuidadosamente</li>
+                <li>Selecciona la respuesta que consideres correcta</li>
+                <li>Avanza por todas las preguntas</li>
+                <li>¡Obtén el mejor puntaje posible!</li>
+            </ul>
+        </div>
+
+        <!-- Cuestionario Wordwall -->
+        <div class="quiz-wrapper">
+            <iframe
+                class="quiz-frame"
+                src="https://wordwall.net/es/embed/41489a0b64d64bd8b82884c45a4ed6ce?themeId=62&templateId=8&fontStackId=0"
+                width="500"
+                height="380"
+                frameborder="0"
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="btn-container">
+            <a 
+                href="https://wordwall.net/es/embed/41489a0b64d64bd8b82884c45a4ed6ce" 
+                target="_blank" 
+                class="btn btn-primary">
+                🔗 Abrir en Wordwall
+            </a>
+            <button 
+                class="btn btn-secondary" 
+                onclick="document.querySelector('.quiz-frame').src = document.querySelector('.quiz-frame').src">
+                🔄 Reiniciar
+            </button>
+            <button 
+                class="btn btn-outline" 
+                onclick="window.print()">
+                🖨️ Imprimir
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Creado con ❤️ usando 
+                <a href="https://wordwall.net" target="_blank">Wordwall</a> 
+                — Herramienta educativa interactiva
+            </p>
+        </div>
+
+    </div>
+
+</body>
+</html>
